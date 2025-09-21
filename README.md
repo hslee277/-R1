@@ -1,5 +1,48 @@
 ```mermaid
 flowchart TB
+
+
+subgraph SVC[1 Service & App]
+SVC1[eLoran];
+SVC2[Req SNR BER];
+SVC3[Ops Policy];
+end
+
+
+subgraph BB[2 Source / Baseband]
+BB1[Line Coding NRZ RZ Manch AMI];
+BB2[DPCM ADPCM];
+BB3[Scrambler];
+end
+
+
+subgraph CC[3 Channel Coding & Framing]
+CC1[LDPC Turbo];
+CC2[HARQ];
+CC3[Interleaver];
+CC4[Frame];
+end
+
+
+subgraph MOD[4 Mod Demod & Pulse]
+MD1[8PSK QAM FSK];
+MD2[OFDM CP];
+MD3[RC RRC];
+MD4[FTN];
+MD5[FM Pre Deemph];
+end
+
+
+subgraph SYNC[5 Sync & Timing]
+SY1[PLL CDR];
+SY2[AFC];
+SY3[Timing Recov];
+SY4[Pilots PRACH];
+end
+
+
+subgraph RF[6 RF Frontend]
+RF1[LNA];
 RF2[Mixer];
 RF3[LO PLL Synth];
 RF4[IF Chain Double Superhet];
@@ -32,49 +75,4 @@ RX1[Matched Filter];
 RX2[MLSE LLR Decision];
 RX3[AGC ADC DSP];
 end
-
-
-subgraph QMS[10 Quality & Measurement]
-QM1[EVM];
-QM2[BER EbN0];
-QM3[ACPR ACLR];
-QM4[IMD3 IP3];
-QM5[Spectrum Analyzer RBW VBW];
-QM6[MDS Link Margin];
-end
-
-
-subgraph OPS[11 Operations & Planning]
-OP1[Link Budget Pt Pr FSPL];
-OP2[Freq Plan];
-OP3[Site Clearance];
-OP4[Compliance];
-end
-
-
-%% Flow edges (top-level chain)
-SVC --> BB;
-BB --> CC;
-CC --> MOD;
-MOD --> SYNC;
-SYNC --> RF;
-RF --> ANT;
-ANT --> CH;
-CH --> RX;
-RX --> QMS;
-QMS --> OPS;
-
-
-%% Cross edges (핵심 상호의존)
-CH1 --> QM1;
-CH1 --> QM2;
-QM2 --> CC1;
-MD3 --> RX1;
-MD2 --> CH3;
-CH5 --> OP1;
-CH6 --> OP3;
-AN2 --> CH;
-RF5 --> QM4;
-RF7 --> SEL[Selectivity];
 SEL --> QM3;
-end
