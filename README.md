@@ -1,3 +1,4 @@
+```mermaid
 flowchart LR
 PL[Path Loss Models];
 AW --> SNR;
