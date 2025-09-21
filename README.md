@@ -1,5 +1,6 @@
 ```mermaid
 flowchart LR
+subgraph RF
 PL[Path Loss Models];
 AW --> SNR;
 DS --> Bc;
