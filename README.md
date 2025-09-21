@@ -1,77 +1,80 @@
 ```mermaid
-flowchart LR
-subgraph RF
-PL[Path Loss Models];
-AW --> SNR;
-DS --> Bc;
-Bc --> ISI;
-FZ --> Lfs;
-IONO --> PLAN;
-FADING --> SNR;
-DOPPLER --> Bc;
-PL --> Lfs;
+flowchart TB
+RF2[Mixer];
+RF3[LO PLL Synth];
+RF4[IF Chain Double Superhet];
+RF5[PA DPD];
+RF6[Duplexer SAW BAW];
+RF7[RF Filters LC SAW BAW Cavity];
 end
 
 
-subgraph RF
-PLL[PLL];
-LOPN[Phase Noise];
-RFF[RF Filter];
-SEL[Selectivity];
-RX[Double Superhet];
-LNA[LNA];
-MIX[Mixer];
-PA[PA DPD];
-DUP[Duplexer SAW BAW];
-ANT[Antenna Pattern Pol];
-AGC[AGC];
-MIMO[MIMO Beamforming];
-PLL --> LOPN;
-RFF --> SEL;
-RX --> SEL;
-LNA --> RX;
-MIX --> RX;
-PA --> IMD;
-DUP --> RFF;
-ANT --> SNR;
-AGC --> RX;
-MIMO --> SNR;
+subgraph ANT[7 Antenna & Array]
+AN1[Gain Pattern Pol];
+AN2[MIMO Beamforming];
 end
 
 
-subgraph Measure
-SA[Spectrum Analyzer];
-ACPR[ACPR];
-EVM[EVM];
-BER[BER];
-IMD[IMD3];
-EBN0[Eb N0];
-SA --> ACPR;
-EVM --> BER;
-IMD --> ACPR;
-EBN0 --> BER;
+subgraph CH[8 Channel & Propagation]
+CH1[AWGN kTB NF];
+CH2[Fading Rayleigh Rice];
+CH3[Delay Spread -> Bc];
+CH4[Doppler -> Tc];
+CH5[FSPL Pathloss];
+CH6[Fresnel Zone];
+CH7[Ionosphere LUF MUF FOT];
+CH8[Velocity Dispersion];
 end
 
 
-PS --> EVM;
-AW --> SNR;
-SNR --> EVM;
-Lfs --> SNR;
-LOPN --> EVM;
-IMD --> EVM;
-RX --> EVM;
-FTN[FTN] --> MF[Matched Filter MLSE];
-OFDM --> ISI;
-EQ[Equalizer] --> ISI;
-DIV[Diversity] --> SNR;
-LDPC --> BER;
-HARQ --> BER;
-MIMO --> SNR;
-LNA --> SNR;
-PA --> IMD;
-DUP --> SEL;
-ANT --> SNR;
-PL --> Lfs;
-FADING --> Bc;
-DOPPLER --> EVM;
+subgraph RX[9 Receiver & Detection]
+RX1[Matched Filter];
+RX2[MLSE LLR Decision];
+RX3[AGC ADC DSP];
+end
+
+
+subgraph QMS[10 Quality & Measurement]
+QM1[EVM];
+QM2[BER EbN0];
+QM3[ACPR ACLR];
+QM4[IMD3 IP3];
+QM5[Spectrum Analyzer RBW VBW];
+QM6[MDS Link Margin];
+end
+
+
+subgraph OPS[11 Operations & Planning]
+OP1[Link Budget Pt Pr FSPL];
+OP2[Freq Plan];
+OP3[Site Clearance];
+OP4[Compliance];
+end
+
+
+%% Flow edges (top-level chain)
+SVC --> BB;
+BB --> CC;
+CC --> MOD;
+MOD --> SYNC;
+SYNC --> RF;
+RF --> ANT;
+ANT --> CH;
+CH --> RX;
+RX --> QMS;
+QMS --> OPS;
+
+
+%% Cross edges (핵심 상호의존)
+CH1 --> QM1;
+CH1 --> QM2;
+QM2 --> CC1;
+MD3 --> RX1;
+MD2 --> CH3;
+CH5 --> OP1;
+CH6 --> OP3;
+AN2 --> CH;
+RF5 --> QM4;
+RF7 --> SEL[Selectivity];
+SEL --> QM3;
 end
